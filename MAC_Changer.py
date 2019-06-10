@@ -3,11 +3,11 @@ import subprocess
 
 class MACChanger:
     def __init__(self):
-        self.cmd = None
-        self.device = None
-        self.new_mac = None
-        self.old_mac = None
-        self.pswd = None
+        self.cmd = ""
+        self.device = ""
+        self.new_mac = []
+        self.old_mac = []
+        self.pswd = ""
 
     def process_exec(self, cmd, console_print=False, return_report=False):
         proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
