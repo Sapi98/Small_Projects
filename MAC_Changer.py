@@ -1,9 +1,9 @@
 import os
 import subprocess
 
-#pwd = input("Enter the password : ")
+cmd = ["ip", "link", "show"]
 
-proc = subprocess.Popen(["ip", "link", "show"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 out, err = proc.communicate()
 print(out)
 out = out.splitlines()
@@ -11,6 +11,7 @@ out = out.splitlines()
 device = input("Enter the name of the device (eg eth0) : ")
 new_mac = input("Enter the New MAC that you want to set (in form xx:xx:xx:xx:xx:xx): ").strip().split(':')
 l = len(new_mac)
+old_mac = None
 
 if l != 6:
     print("Enter a valid MAC Address")
@@ -20,7 +21,6 @@ else:
             print("Enter a valid MAC Address")
             break
 
-flag = False
 index = -1
 for i in range(len(out)):
     exp = out[i]
@@ -28,5 +28,16 @@ for i in range(len(out)):
         index = i+1
         break
 
-if index != -1:
-    
+if index == -1:
+    print("The device you have entered does not exists")
+else:
+    #Find out the old MAC Address and save it into disk for retrieval
+    cmd = ['ip', 'link', 'set', 'dev'] + [device] + ['down']
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, err = proc.communicate()
+    if err != None:
+        print(err)
+    else:
+        cmd = ['ip', 'link', 'set', 'dev'] + [device] + ['address'] + [':'.join(new_mac)]
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out, err = proc.communicate()
