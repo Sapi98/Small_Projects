@@ -66,6 +66,30 @@ class MACChanger:
         save_file.close()
         time.sleep(3)
         print('Old MAC Id is saved in file : \'', os.path.join(os.getcwd(), 'old_mac'), "\'")
+    
+    def reset_MAC(self):
+        try:
+            read_file = open('old_mac', 'r')
+            file_content = read_file.read().split('@')
+        except FileNotFoundError:
+            print('ERROR : The \'old_mac\' file does not exist in this Directory.')
+            print('Please make sure that the file and the program is kept in the same Directory')
+            return
+        
+        self.device, self.new_mac = file_content
+        
+        self.set_command('ip link set dev ' + self.device + ' down')
+        self.process_exec()
+
+        self.set_command("ip link set dev " + self.device + " address " + self.new_mac)
+        self.process_exec()
+
+        self.set_command('ip link set dev ' + self.device + ' up')
+        self.process_exec()
+
+        print("MAC ID SUCCESSFULLY RESET")
+        print('Device :', self.device)
+        print('MAC ID :', self.new_mac)
 
     def exit_app(self):
         print('!!!APPLICATION IS CLOSED!!!')
@@ -83,7 +107,7 @@ class MACChanger:
         i = None
         out = ""
 
-        """while not flag:
+        while not flag:
             self.new_mac = input("Enter the New MAC that you want to set (in form xx:xx:xx:xx:xx:xx): ").strip().split(':')
             flag = self.check_mac()
             if not flag:
@@ -91,7 +115,7 @@ class MACChanger:
                 i = input("Enter Yes/No : ")
                 i = i.lower()
                 if 'no' or 'n':
-                    self.exit_app()"""
+                    self.exit_app()
 
         flag = False
 
@@ -113,7 +137,7 @@ class MACChanger:
         print('====================================')
         self.find_save_mac(out, i)
 
-        """self.set_command('ip link set dev ' + self.device + ' down')
+        self.set_command('ip link set dev ' + self.device + ' down')
         self.process_exec()
 
         self.set_command("ip link set dev " + self.device + " address " + ':'.join(self.new_mac))
@@ -122,10 +146,9 @@ class MACChanger:
         self.set_command('ip link set dev ' + self.device + ' up')
         self.process_exec()
 
-        print("MAC ID SUCCESSFULLY CHANGED")"""
-    
-    def reset_MAC(self):
-        pass
+        print("MAC ID SUCCESSFULLY CHANGED")
+        print('Device :', self.device)
+        print('MAC ID :', self.new_mac)
     
     def main(self):
         
