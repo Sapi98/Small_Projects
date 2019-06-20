@@ -95,9 +95,12 @@ class MACChanger:
         print('!!!APPLICATION IS CLOSED!!!')
         exit(0)
 
-    def check_MAC(self):
+    def seek_MAC(self, console_print = False, return_report = False):
         self.set_command("ip link show")
-        out = self.process_exec(console_print=True, return_report=True)
+        out = self.process_exec(console_print=console_print, return_report=return_report)
+
+        if return_report:
+            return out
     
     def changeMac_control(self):
         flag = False
@@ -114,7 +117,7 @@ class MACChanger:
                 if 'no' or 'n':
                     self.exit_app()
 
-        self.check_MAC()
+        out = self.seek_MAC(True, True)
 
         flag = False
 
@@ -167,6 +170,8 @@ class MACChanger:
                 self.changeMac_control()
             elif choice == 2:
                 self.reset_MAC()
+            elif choice == 3:
+                self.seek_MAC(True)
             else:
                 print('Wrong Input')
 
