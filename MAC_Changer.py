@@ -95,12 +95,9 @@ class MACChanger:
         print('!!!APPLICATION IS CLOSED!!!')
         exit(0)
 
-    def printChoice(self):
-        print('Enter :')
-        print('1 for Changing the MAC Id')
-        print('2 for reset the MAC Id')
-        print('0 to exit')
-        
+    def check_MAC(self):
+        self.set_command("ip link show")
+        out = self.process_exec(console_print=True, return_report=True)
     
     def changeMac_control(self):
         flag = False
@@ -117,10 +114,9 @@ class MACChanger:
                 if 'no' or 'n':
                     self.exit_app()
 
-        flag = False
+        check_MAC()
 
-        self.set_command("ip link show")
-        out = self.process_exec(console_print=True, return_report=True)
+        flag = False
 
         while not flag:
             self.device = input("Enter the device index (eg 1): ")
@@ -149,6 +145,13 @@ class MACChanger:
         print("MAC ID SUCCESSFULLY CHANGED")
         print('Device :', self.device)
         print('MAC ID :', self.new_mac)
+
+    def printChoice(self):
+        print('Enter :')
+        print('1 for Changing the MAC Id')
+        print('2 for reset the MAC Id')
+        print('3 to check the MAC Id')
+        print('0 to exit')
     
     def main(self):
         
