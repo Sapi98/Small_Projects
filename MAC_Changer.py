@@ -114,7 +114,7 @@ class MACChanger:
                 if 'no' or 'n':
                     self.exit_app()
 
-        check_MAC()
+        self.check_MAC()
 
         flag = False
 
