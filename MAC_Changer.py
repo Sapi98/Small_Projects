@@ -8,6 +8,8 @@ class MACChanger:
         self.new_mac = []
         self.old_mac = []
         self.pswd = ""
+        self.printChoice()
+        self.main()
 
     def process_exec(self, console_print=False, return_report=False):
         proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -51,8 +53,15 @@ class MACChanger:
     def exit_app(self):
         print('!!!APPLICATION IS CLOSED!!!')
         exit(0)
+
+    def printChoice(self):
+        print('Enter :')
+        print('1 for Changing the MAC Id')
+        print('2 for reset the MAC Id')
+        print('0 to exit')
+        
     
-    def main(self):
+    def changeMac_control(self):
         flag = False
         i = None
         out = ""
@@ -94,3 +103,23 @@ class MACChanger:
         self.process_exec()
 
         print("MAC ID SUCCESSFULLY CHANGED")
+    
+    def reset_MAC(self):
+        pass
+    
+    def main(self):
+        
+        while True:
+            try:
+                choice = int(input('Enter Option : '))
+            except ValueError:
+                print("Input should be a numeric value ranging from 0-2")
+                continue
+            if choice == 0:
+                self.exit_app()
+            elif choice == 1:
+                self.changeMac_control()
+            elif choice == 2:
+                self.reset_MAC()
+            else:
+                print('Wrong Input')
