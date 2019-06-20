@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 class MACChanger:
     def __init__(self):
@@ -14,12 +15,17 @@ class MACChanger:
     def process_exec(self, console_print=False, return_report=False):
         proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         out, err = proc.communicate()
+        out = out.splitlines()
+
+        for i in range(len(out)):
+            out[i] = str(out[i])[2:-1]
+            if console_print:
+                print(out[i])
+
         if err != None:
             print(err)
-        elif console_print:
-            print(out)
-            if return_report:
-                return out.splitlines()
+        if return_report:
+            return out
 
     def set_command(self, command_string):
         self.cmd = command_string.strip().split()
@@ -27,14 +33,18 @@ class MACChanger:
     def check_device(self, out):
         index = -1
         for i in range(len(out)):
-            exp = out[i]
-            if self.device in exp:
+            if self.device == out[i][0]:
                 index = i+1
                 break
         
         if index == -1:
             return (False, -1)
         else:
+            i = 3
+            self.device = ''
+            while out[index-1][i] != ':':
+                self.device += out[index-1][i]
+                i += 1
             return (True, index)
     
     def check_mac(self):
@@ -48,7 +58,12 @@ class MACChanger:
         return True
 
     def find_save_mac(self, out, index):
-        pass
+        self.old_mac = out[index][15:33]
+        print("Old MAC : ", self.old_mac)
+        print("Please wait while the Old MAC is being saved....")
+        save_file = open('old_mac', 'w')
+        save_file.write(self.old_mac)
+        save_file.close()
 
     def exit_app(self):
         print('!!!APPLICATION IS CLOSED!!!')
@@ -82,15 +97,18 @@ class MACChanger:
         out = self.process_exec(console_print=True, return_report=True)
 
         while not flag:
-            self.device = input("Enter the name of the device (eg eth0) : ")
+            self.device = input("Enter the device index (eg 1): ")
             flag, i = self.check_device(out)
             if not flag:
                 print("The Device Name entered is Invalid")
-                i = input("Enter Yes/No : ")
+                i = input("Do you want to continue ? Enter Yes/No : ")
                 i = i.lower()
                 if 'no' or 'n':
                     self.exit_app()
         
+        print('====================================')
+        print("Your Chosen Device Is :", self.device.upper())
+        print('====================================')
         self.find_save_mac(out, i)
 
         self.set_command('ip link set dev ' + self.device + ' down')
@@ -123,3 +141,6 @@ class MACChanger:
                 self.reset_MAC()
             else:
                 print('Wrong Input')
+
+
+obj = MACChanger()
