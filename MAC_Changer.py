@@ -3,19 +3,41 @@ import subprocess
 import time
 
 class MACChanger:
+
+    """This is the class designed to contain all the methods and data that are required for basic operation
+    of the code. All the basic functionalities are encapsulated within this class. It is possible to easily 
+    extract all the components of this file and inherit the MACChanger class."""
+
     def __init__(self):
+        
+        """Initializes the class variables :-
+        cmd : A list of words belonging to the command string 
+        device : Stores the name of the device
+        new_mac : Stores the new MAC Id to be set
+        old_mac : Stores the old MAC Id that needs to be saved for reset request"""
+
         self.cmd = ""
         self.device = ""
         self.new_mac = []
         self.old_mac = []
-        self.pswd = ""
+
         self.printChoice()
         self.main()
 
     def process_exec(self, console_print=False, return_report=False):
+
+        """This method is used to execute a process through the terminal in the background
+        Inputs :
+        console_print : A boolean used to specify whether the output needs to be printed in the console
+        return_reports : A boolean used to specify whether the output needs to be returned by the method"""
+
+        # Process execution
+
         proc = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         out, err = proc.communicate()
         out = out.splitlines()
+
+        # Output analysis of the process
 
         for i in range(len(out)):
             out[i] = str(out[i])[2:-1]
@@ -24,13 +46,30 @@ class MACChanger:
 
         if err != None:
             print(err)
+
         if return_report:
             return out
 
     def set_command(self, command_string):
+
+        """Processing the command string and storing it in the class variable cmd in such a form which is
+        accepted by the process executor method subprocess.Popen(parameters)
+        Input :
+        command_string : A string representing the complete command that needs to be processed"""
+
         self.cmd = command_string.strip().split()
     
     def check_device(self, out):
+
+        """This method checks the validity of the existance of the device that is entered by the user.
+        The device is checked from the list of devices as reported by the system
+        Input :
+        out : A list consisting of the output list of devices reported by the system
+        Note : The variable device is used to store the user input of the device index according to the
+        system record"""
+
+        # Checking algorithm
+
         index = -1
         for i in range(len(out)):
             if self.device == out[i][0]:
@@ -39,6 +78,7 @@ class MACChanger:
         
         if index == -1:
             return (False, -1)
+
         else:
             i = 3
             self.device = ''
@@ -48,13 +88,27 @@ class MACChanger:
             return (True, index)
     
     def check_mac(self):
+
+        # This method checks the validity of the new MAC Id that is entered by the user
+
+        # Checking algorithm
+
         l = len(self.new_mac)
+
         if l != 6:
             return False
+        
         else:
             for i in self.new_mac:
                 if len(i) != 2:
                     return False
+                
+                if not ((i[0] >= 0 and i[0] <= 9) or (i[0].lower() >= 'a' and i[0].lower() <= 'f')):
+                    return False
+                
+                if not ((i[1] >= 0 and i[1] <= 9) or (i[1].lower() >= 'a' and i[1].lower() <= 'f')):
+                    return False
+
         return True
 
     def find_save_mac(self, out, index):
@@ -175,5 +229,5 @@ class MACChanger:
             else:
                 print('Wrong Input')
 
-
-obj = MACChanger()
+if __name__ == "__main__":
+    obj = MACChanger()
